@@ -1,44 +1,22 @@
 package logger
 
 import (
+	"fmt"
 	"log"
-	"os"
 )
 
-// Logger wraps the standard logger
-type Logger struct {
-	*log.Logger
+func Infof(format string, args ...interface{}) {
+	log.Printf("[INFO] "+format, args...)
 }
 
-// NewLogger creates a new logger instance
-func NewLogger() *Logger {
-	return &Logger{
-		Logger: log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile),
-	}
+func Errorf(format string, args ...interface{}) {
+	log.Printf("[ERROR] "+format, args...)
 }
 
-// Info logs an info message
-func (l *Logger) Info(msg string) {
-	l.Printf("[INFO] %s", msg)
+func Fatalf(format string, args ...interface{}) {
+	log.Fatalf("[FATAL] "+format, args...)
 }
 
-// Error logs an error message
-func (l *Logger) Error(msg string) {
-	l.Printf("[ERROR] %s", msg)
+func Debug(v ...interface{}) {
+	fmt.Println(v...)
 }
-
-// Warn logs a warning message
-func (l *Logger) Warn(msg string) {
-	l.Printf("[WARN] %s", msg)
-}
-
-// Debug logs a debug message
-func (l *Logger) Debug(msg string) {
-	l.Printf("[DEBUG] %s", msg)
-}
-
-// Fatal logs a fatal message and exits
-func (l *Logger) Fatal(msg string) {
-	l.Fatalf("[FATAL] %s", msg)
-}
-

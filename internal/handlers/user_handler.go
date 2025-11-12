@@ -1,36 +1,38 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"myapp/internal/service"
+	"myapp/pkg/logger"
+
+	"github.com/go-chi/chi/v5"
 )
 
-// UserHandler handles user-related HTTP requests
 type UserHandler struct {
-	// Add dependencies here (e.g., user service)
+	Service *service.UserService
 }
 
-// NewUserHandler creates a new instance of UserHandler
-func NewUserHandler() *UserHandler {
-	return &UserHandler{}
-}
-
-// GetUser handles GET /users/:id
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
-	// Implementation here
-}
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid user id", http.StatusBadRequest)
+		return
+	}
 
-// CreateUser handles POST /users
-func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	// Implementation here
-}
+	user, err := h.Service.GetUser(r.Context(), id)
+	if err != nil {
+		http.Error(w, "user not found", http.StatusNotFound)
+		return
+	}
 
-// UpdateUser handles PUT /users/:id
-func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	// Implementation here
-}
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		http.Error(w, "encoding error", http.StatusInternalServerError)
+		return
+	}
 
-// DeleteUser handles DELETE /users/:id
-func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	// Implementation here
+	logger.Infof("User fetched: %d", id)
 }
-
